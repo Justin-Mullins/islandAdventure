@@ -4,19 +4,21 @@
 <script src="jquery-3.3.1.js"></script>
 <link rel="stylesheet" href="popup.css">
 </head>
-<div class="popup_box" id="tradeMenu">    <!-- PopupBox div-->
-  <h1>Trade</h1>
-  <a id="popupBoxClose" id="fightMenu">x</a>
-  <button class="button" id="tradeButton">Trade</button>
-</div>
+<div id="header"></div>
+
 <div class="popup_box">    <!-- PopupBox div-->
-  <h1>Fight</h1>
+  <h1>Test</h1>
   <a id="popupBoxClose">x</a>
-  <button class="button" id="fightButton">Fight</button>
+  <button class="button">Trade</button>
 </div>
+
+<div id="console">
+  <div class="item" id="stage"></div>
+  <div class="item" id="menu">
+    <p id="title"></p>
+    <p id="output"></p>
+  </div>
 </div>
-<div id="stage"></div>
-<p id="output"></p>
 
 <script>
 
@@ -31,15 +33,15 @@ $(document).ready( function() {
      unloadPopupBox();
    });
 
-   function unloadPopupBox(input) {    // TO Unload the Popupbox
-     $(input).fadeOut("fast");
+   function unloadPopupBox() {    // TO Unload the Popupbox
+     $(".popup_box").fadeOut("fast");
      $(".modalOverlay").remove();
      window.addEventListener("keydown", keydownHandler, false);
    }
 
-   function loadPopupBox(input) {    // To Load the Popupbox
+   function loadPopupBox() {    // To Load the Popupbox
      //$("#popupBoxContainer").toggleClass("display");
-     $(input).fadeIn("fast");
+     $(".popup_box").fadeIn("fast");
      $("body").append('<div class="modalOverlay">');
      window.removeEventListener("keydown", keydownHandler, false);
     }
@@ -49,9 +51,14 @@ $(document).ready( function() {
 // But jQuery $(document).ready is open for the
 // whole javascript document.
 
-// Get a reference to the stage and output
+  // Get a reference to the stage and output
   var stage = document.querySelector("#stage");
   var output = document.querySelector("#output");
+
+  // Set trade and fight buttons
+  var button = document.querySelector("button");
+  button.style.cursor = "pointer";
+  button.addEventListener("click", trade, false);
 
   // The map stores all the non-moving (static) game objects
   var map = [
@@ -181,15 +188,10 @@ $(document).ready( function() {
         var randChoice = Math.floor((Math.random() * 2) + 1);
         switch (randChoice) {
           case 1:
-            console.log("trade");
-            loadPopupBox("#tradeMenu");
-            //$("#popup_box").append('<p class="message">');
-            //$("p message").html("You have found a trading post.");
-            //trade();
+            trade();
             break;
           case 2:
-            console.log("fight");
-            //fight();
+            fight();
             break;
           case 3:
             randEncounter();
@@ -207,13 +209,13 @@ $(document).ready( function() {
 
   function trade() {
     // $("#popup_box").append('<p class="message">');
-    $("p message").html("");
-    $("button tradeButton").hide();
-    $("#popup_box h1").html("Trading Outpost");
+    console.log("trade");
+    output.innerHTML = "Trading Outpost";
   }
 
   function fight() {
     console.log("fight");
+    output.innerHTML = "Pirate Attack!";
   }
 
   function randEncounter() {

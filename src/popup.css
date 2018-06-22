@@ -1,11 +1,30 @@
+#container {
+  position: relative;
+  width: 684px;
+  height: 384px;
+}
+
 #stage {
   position: relative;
-  background-color: white;
+  background-color: #74bfaa;
   width: 384px;
   height: 384px;
-  margin: auto;
-  background-image: url("../images/background_white.png");
-  border-radius: 30px;
+  float: left;
+  margin-left: 20%;
+  background-image: url("../images/background.png");
+  border-radius: 10px;
+  border: solid 3px #945c00;
+}
+
+#menu {
+  position: relative;
+  background-color: #74bfaa;
+  width: 240px;
+  height: 384px;
+  float: left;
+  margin-left: 5px;
+  border-radius: 10px;
+  border: solid 3px #945c00;
 }
 
 .cell {
@@ -16,13 +35,20 @@
 }
 
 p {
-  width: 400px;
+  position: relative;
+  width: 200px;
   text-align: center;
   margin: auto;
+  color: white;
+}
+
+#title {
+  margin-top: 15px;
+  
 }
 
 body {
-  background-color: white;
+  background-color: #f7a61d;
   color: black;
   font-family: arial;
 }
@@ -48,12 +74,6 @@ body {
     color: white;
     border: solid 2px white;
     border-radius: 5px;
-}
-
-#container {
-    background: #d2d2d2; /*Sample*/
-    width: 100%;
-    height: 100%;
 }
 
 a {
