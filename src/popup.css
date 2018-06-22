@@ -1,7 +1,21 @@
 #container {
   position: relative;
-  width: 684px;
-  height: 384px;
+  margin: auto;
+  width: 700px;
+  height: 500px;
+}
+
+#resources {
+  position: relative;
+  background-color: #74bfaa;
+  width: 635px;
+  height: 40px;
+  /*clear: left;*/
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  border: solid 3px #945c00;
 }
 
 #stage {
@@ -10,7 +24,7 @@
   width: 384px;
   height: 384px;
   float: left;
-  margin-left: 20%;
+  margin-left: 26%;
   background-image: url("../images/background.png");
   border-radius: 10px;
   border: solid 3px #945c00;
@@ -27,6 +41,29 @@
   border: solid 3px #945c00;
 }
 
+#title {
+  margin-top: 15px;
+  padding-top: 10px;
+  width: 200px;
+  height: 50px;
+  margin-left: 0px auto;
+  margin-right: 0px auto;
+  background-color: white;
+  border: solid 3px #945c00;
+  border-radius: 10px;
+}
+
+#output {
+  margin-top: 20px;
+  width: 200px;
+  height: 260px;
+  margin-left: 0px auto;
+  margin-right: 0px auto;
+  background-color: white;
+  border: solid 3px #945c00;
+  border-radius: 10px;
+}
+
 .cell {
   display: block;
   position: absolute;
@@ -39,12 +76,7 @@ p {
   width: 200px;
   text-align: center;
   margin: auto;
-  color: white;
-}
-
-#title {
-  margin-top: 15px;
-  
+  color: #945c00;
 }
 
 body {

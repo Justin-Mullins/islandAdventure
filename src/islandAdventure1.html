@@ -12,11 +12,14 @@
   <button class="button">Trade</button>
 </div>
 
-<div id="console">
-  <div class="item" id="stage"></div>
-  <div class="item" id="menu">
-    <p id="title"></p>
-    <p id="output"></p>
+<div>
+  <div id="console">
+    <div class="item" id="resources"></div>
+    <div class="item" id="stage"></div>
+    <div class="item" id="menu">
+      <p id="title"></p>
+      <p id="output"></p>
+    </div>
   </div>
 </div>
 
@@ -54,6 +57,7 @@ $(document).ready( function() {
   // Get a reference to the stage and output
   var stage = document.querySelector("#stage");
   var output = document.querySelector("#output");
+  var title = document.querySelector("#title");
 
   // Set trade and fight buttons
   var button = document.querySelector("button");
@@ -107,6 +111,10 @@ $(document).ready( function() {
   // The player's resouces Variables
   var gold = 10;
   var food = 10;
+  var coffee = 0;
+  var sugar = 0;
+  var spices = 0;
+  var silk = 0;
   var experience = 0;
   var gameMessage = "Use the arrow keys to find your way home.";
 
@@ -182,7 +190,7 @@ $(document).ready( function() {
     var currentLocation = map[shipRow][shipColumn];
     switch (currentLocation) {
       case WATER:
-        output.innerHTML = "You sail the open sea.";
+        title.innerHTML = "You sail the open sea.";
         break;
       case ISLAND:
         var randChoice = Math.floor((Math.random() * 2) + 1);
@@ -210,12 +218,12 @@ $(document).ready( function() {
   function trade() {
     // $("#popup_box").append('<p class="message">');
     console.log("trade");
-    output.innerHTML = "Trading Outpost";
+    title.innerHTML = "Trading Outpost";
   }
 
   function fight() {
     console.log("fight");
-    output.innerHTML = "Pirate Attack!";
+    title.innerHTML = "Pirate Attack!";
   }
 
   function randEncounter() {
