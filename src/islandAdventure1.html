@@ -14,7 +14,9 @@
 
 <div>
   <div id="console">
-    <div class="item" id="resources"></div>
+    <div class="item" id="resources">
+      <p id="output2"></p>
+    </div>
     <div class="item" id="stage"></div>
     <div class="item" id="menu">
       <p id="title"></p>
@@ -57,6 +59,7 @@ $(document).ready( function() {
   // Get a reference to the stage and output
   var stage = document.querySelector("#stage");
   var output = document.querySelector("#output");
+  var output2 = document.querySelector("#output2");
   var title = document.querySelector("#title");
 
   // Set trade and fight buttons
@@ -118,6 +121,9 @@ $(document).ready( function() {
   var experience = 0;
   var gameMessage = "Use the arrow keys to find your way home.";
 
+  // display initial starting values
+  output2.innerHTML = "Food: " + food + "     Gold: " + gold + "    ";
+
   // The keyboard listener to trigger keydownHandler function if a key is pressed
   window.addEventListener("keydown", keydownHandler, false);
 
@@ -163,11 +169,15 @@ $(document).ready( function() {
         break;
     }
 
-    food--; // Use up a food at the end of each turn
-    shipLocationAction(); // Find ship location and perform action
-    resetGameObjects(); // Update the gameObjects array
-    if (food <= 0 || gold <= 0) { endGame(); }
-    render();
+    // Only excecute the next actions if the key pressed was up, down, left or right
+    if (key === UP || key === DOWN || key === LEFT || key === RIGHT) {
+      food--; // Use up a food at the end of each turn
+      shipLocationAction(); // Find ship location and perform action
+      resetGameObjects(); // Update the gameObjects array
+      output2.innerHTML = "Food: " + food + "     Gold: " + gold + "    ";
+      if (food <= 0 || gold <= 0) { endGame(); } // Check for endGame conditions
+      render();
+    }
   }
 
   function resetGameObjects() {
