@@ -14,13 +14,19 @@
 
 <div>
   <div id="console">
-    <div class="item" id="resources">
-      <p id="output2"></p>
+    <div class="item" id="topMenu">
+      <div id="output2">
+        <p class="resource" id="food"></p>
+        <p class="resource" id="gold"></p>
+        <p class="resource" id="experience"></p>
+      </div>
     </div>
-    <div class="item" id="stage"></div>
-    <div class="item" id="menu">
-      <p id="title"></p>
-      <p id="output"></p>
+    <div id="container">
+      <div class="item" id="stage"></div>
+      <div class="item" id="menu">
+        <p id="title"></p>
+        <p id="output"></p>
+      </div>
     </div>
   </div>
 </div>
@@ -59,7 +65,9 @@ $(document).ready( function() {
   // Get a reference to the stage and output
   var stage = document.querySelector("#stage");
   var output = document.querySelector("#output");
-  var output2 = document.querySelector("#output2");
+  var foodOutput = document.querySelector("#food");
+  var goldOutput = document.querySelector("#gold");
+  var experienceOutput = document.querySelector("#experience");
   var title = document.querySelector("#title");
 
   // Set trade and fight buttons
@@ -122,7 +130,9 @@ $(document).ready( function() {
   var gameMessage = "Use the arrow keys to find your way home.";
 
   // display initial starting values
-  output2.innerHTML = "Food: " + food + "     Gold: " + gold + "    ";
+  foodOutput.innerHTML = "Food: " + food;
+  goldOutput.innerHTML = "Gold: " + gold;
+  experienceOutput.innerHTML = "Experience: " + experience;
 
   // The keyboard listener to trigger keydownHandler function if a key is pressed
   window.addEventListener("keydown", keydownHandler, false);
@@ -174,7 +184,10 @@ $(document).ready( function() {
       food--; // Use up a food at the end of each turn
       shipLocationAction(); // Find ship location and perform action
       resetGameObjects(); // Update the gameObjects array
-      output2.innerHTML = "Food: " + food + "     Gold: " + gold + "    ";
+      // Update resource count being displayed
+      foodOutput.innerHTML = "Food: " + food;
+      goldOutput.innerHTML = "Gold: " + gold;
+      experienceOutput.innerHTML = "Experience: " + experience;
       if (food <= 0 || gold <= 0) { endGame(); } // Check for endGame conditions
       render();
     }

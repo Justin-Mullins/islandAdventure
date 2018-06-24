@@ -1,16 +1,15 @@
-#container {
+#console {
   position: relative;
+  width: 634px;
+  height: 64px;
   margin: auto;
-  width: 700px;
-  height: 500px;
 }
 
-#resources {
+#topMenu {
   position: relative;
   background-color: #74bfaa;
   width: 634px;
-  height: 50px;
-  /*clear: left;*/
+  height: 64px;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 5px;
@@ -24,7 +23,7 @@
   width: 384px;
   height: 384px;
   float: left;
-  margin-left: 26%;
+/*  margin-left: 26%; */
   background-image: url("../images/background.png");
   border-radius: 10px;
   border: solid 3px #945c00;
@@ -41,6 +40,13 @@
   border: solid 3px #945c00;
 }
 
+#container {
+  position: relative;
+  margin: auto;
+  width: 700px;
+  height: 500px;
+}
+
 #title {
   position: relative;
   margin-top: 15px;
@@ -55,15 +61,24 @@
 }
 
 #output2 {
-  margin-top: 10px;
+  margin-top: 15px;
   padding-top: 5px;
   width: 600px;
-  height: 25px;
-  margin-left: 0px auto;
-  margin-right: 0px auto;
+  height: 22px;
+  margin-left: auto;
+  margin-right: auto;
   background-color: white;
   border: solid 3px #945c00;
   border-radius: 10px;
+  margin-left: 13px;
+}
+
+.resource {
+  float: left;
+}
+
+.item {
+  float: left;
 }
 
 #output {
