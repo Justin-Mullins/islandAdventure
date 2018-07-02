@@ -53,8 +53,8 @@
   padding-top: 10px;
   width: 200px;
   height: 50px;
-  margin-left: 0px auto;
-  margin-right: 0px auto;
+  margin-left: 13px auto;
+  margin-right: 13px auto;
   background-color: white;
   border: solid 3px #945c00;
   border-radius: 10px;
@@ -82,14 +82,17 @@
 }
 
 #output {
-  margin-top: 20px;
+  padding: 10px;
+  margin-top: 13px;
   width: 200px;
   height: 260px;
-  margin-left: 0px auto;
-  margin-right: 0px auto;
+  margin-left: 13px auto;
+  margin-right: 13px auto;
+  margin-botton: 13px;
   background-color: white;
   border: solid 3px #945c00;
   border-radius: 10px;
+  text-align: left;
 }
 
 .cell {
@@ -121,24 +124,23 @@ body {
     height: 300px;
     width: 350px;
     /* background: #ffdd99; */
-    background: #ff6600;
+    background: #74bfaa;
     margin: auto;
     left: 35%;
-    z-index: 100; /* Layering ( on-top of others), if you have lots of layers: I just maximized, you can change it yourself */
-
+    z-index: 99; /* Layering ( on-top of others), if there are lots of layers */
     /* additional features, can be omitted */
     font-family: helvetica;
     padding: 15px;
     font-size: 24px;
     text-align: center;
     color: white;
-    border: solid 2px white;
-    border-radius: 5px;
+    border: solid 3px #945c00;
+    border-radius: 10px;
 }
 
 a {
-cursor: pointer;
-text-decoration: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 /* This is for the positioning of the Close Link */
@@ -150,10 +152,12 @@ text-decoration: none;
     right: 5px;
     top: 5px;
     position: absolute;
-    color: white;
+    color: black;
+    z-index: 100;
     font-weight: 500;
     border: solid 2px black;
-    background-color: #ff4d4d;
+    /*background-color: #ff4d4d;*/
+    background-color: white;
     padding-bottom: 1px;
     padding-right: 3px;
     padding-top: 1px;

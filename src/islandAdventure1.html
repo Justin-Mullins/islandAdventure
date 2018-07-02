@@ -8,8 +8,9 @@
 
 <div class="popup_box">    <!-- PopupBox div-->
   <h1>Test</h1>
+  <p></p>
   <a id="popupBoxClose">x</a>
-  <button class="button">Trade</button>
+  <button class="button">Play Again</button>
 </div>
 
 <div>
@@ -121,13 +122,36 @@ $(document).ready( function() {
 
   // The player's resouces Variables
   var gold = 10;
-  var food = 10;
-  var coffee = 0;
-  var sugar = 0;
-  var spices = 0;
-  var silk = 0;
+  var food = 12;
   var experience = 0;
   var gameMessage = "Use the arrow keys to find your way home.";
+
+  // Arrays for each resource, to store 3 values each.
+  // 1. player's total of that resource,
+  // 2. resource name to be displayed as string.
+  // 3. The upper and lower bound price of each resource.
+  var tradeItem1 = [0, "coffee", [20, 45]];
+  var tradeItem2 = [0, "coal" , [10, 35]];
+  var tradeItem3 = [0, "grain", [10, 35]];
+  var tradeItem4 = [0, "sugar", [15, 40]];
+  var tradeItem5 = [0, "salt", [30, 55]];
+  var tradeItem6 = [0, "wool", [40, 65]];
+  var tradeItem7 = [0, "cotton cloth", [55, 80]];
+  var tradeItem8 = [0, "iron ore", [80, 105]];
+  var tradeItem9 = [0, "tin ore", [50, 75]];
+  var tradeItem10 = [0, "wine", [45, 70]];
+
+  // This array stores each island's trade resources on the Map
+  // As the player travels to a new island, their resources populate here.
+  var everyIslandsResources = [];
+
+  // Array with all the trade items in it.
+  var TRADEITEMS = [tradeItem1, tradeItem2, tradeItem3, tradeItem4, tradeItem5,
+                    tradeItem6, tradeItem7, tradeItem8, tradeItem9, tradeItem10];
+
+  // Array with all islands' trade resources,
+  // will be populated with info as new islands are discovered.
+  var islandTradeResources = [];
 
   // display initial starting values
   foodOutput.innerHTML = "Food: " + food;
@@ -142,7 +166,9 @@ $(document).ready( function() {
   // This function detects which key was pressed and how to update ship position
   function keydownHandler(event) {
     // Clear any existing output text
-    output.innerHTML = "";
+    if (key === UP || key === DOWN || key === LEFT || key === RIGHT) {
+      output.innerHTML = "";
+    }
     // Stores the key code for the key just pressed
     var key = event.keyCode;
     //console.log("key code: " + key);
@@ -154,6 +180,7 @@ $(document).ready( function() {
         if (shipRow > 0) {
           // move the ship up one space.
           shipRow--;
+          food--; // Use up a food at the end of each turn
         }
         break;
       case DOWN:
@@ -161,6 +188,7 @@ $(document).ready( function() {
         if (shipRow < ROWS - 1) {
           // move the ship down one space.
           shipRow++;
+          food--; // Use up a food at the end of each turn
         }
         break;
       case LEFT:
@@ -168,6 +196,7 @@ $(document).ready( function() {
         if (shipColumn > 0) {
           // move the ship left one space.
           shipColumn--;
+          food--; // Use up a food at the end of each turn
         }
         break;
       case RIGHT:
@@ -175,20 +204,20 @@ $(document).ready( function() {
         if (shipColumn < COLUMNS - 1) {
           // move the ship right one space.
           shipColumn++;
+          food--; // Use up a food at the end of each turn
         }
         break;
     }
 
     // Only excecute the next actions if the key pressed was up, down, left or right
     if (key === UP || key === DOWN || key === LEFT || key === RIGHT) {
-      food--; // Use up a food at the end of each turn
       shipLocationAction(); // Find ship location and perform action
       resetGameObjects(); // Update the gameObjects array
       // Update resource count being displayed
       foodOutput.innerHTML = "Food: " + food;
       goldOutput.innerHTML = "Gold: " + gold;
       experienceOutput.innerHTML = "Experience: " + experience;
-      if (food <= 0 || gold <= 0) { endGame(); } // Check for endGame conditions
+      if (food <= 0 /* || gold <= 0 */) { endGame(); } // Check for endGame conditions
       render();
     }
   }
@@ -239,9 +268,34 @@ $(document).ready( function() {
   }
 
   function trade() {
-    // $("#popup_box").append('<p class="message">');
-    console.log("trade");
-    title.innerHTML = "Trading Outpost";
+    // I need to make a temporary copy of TRADEITEMS array that will
+    // not change the original array, because I will be removing items
+    // from the copy. To make a copy that won't change the original -
+    // I have to use the .slice(0) to return a copy of the whole array.
+    var tradeItemsCopy = TRADEITEMS.slice(0);
+    // Create an empty array to hold the items that will be bought and sold
+    // on this island.
+    var islandResources = [];
+    // Create an empty variable that will hold the item index.
+    var randItemIndex;
+    // Get random items for trade for the current island.
+    // Run a while loop to find the items that will be bought and sold here.
+    for (var i = 0; i < 8; i++) {
+      // Create a random item index to pull an item from the array.
+      randItemIndex = Math.floor(Math.random() * tradeItemsCopy.length);
+      // Remove the random item from the tradeItemsCopy array,
+      // and then add it to the islandResources array for this island.
+      var temp = tradeItemsCopy.splice(randItemIndex, 1);
+      islandResources.push(temp[0]);
+    }
+    console.log(islandResources);
+    title.innerHTML = " You find a trading outpost.";
+    output.innerHTML = "You can buy:<br><br>";
+
+    for (var index = 0; index < islandResources.length / 2; index++) {
+      output.innerHTML += islandResources[index][1];
+      output.innerHTML += "    - " + islandResources[index][2][0] + "<br>";
+    }
   }
 
   function fight() {
@@ -255,6 +309,11 @@ $(document).ready( function() {
 
   function endGame() {
     console.log("endGame");
+    loadPopupBox();
+    if (food <= 0) {
+      $(".popup_box h1").html("Game Over");
+      $(".popup_box p").html("You ran out of food.");
+    }
   }
 
   function render() {
