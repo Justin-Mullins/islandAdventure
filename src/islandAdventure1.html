@@ -28,6 +28,15 @@
       <div class="item" id="menu">
         <p id="title"></p>
         <p id="output"></p>
+        <div id="tab1">
+          <p id="tabText1">B u y</p>
+        </div>
+      </div>
+      <div id="tab2" class="tab">
+        <p id="tabText2">I<br>t<br>e<br>m<br>s</p>
+      </div>
+      <div id="tab3" class="tab">
+        <p id="tabText3">S e l l</p>
       </div>
     </div>
   </div>
@@ -72,10 +81,22 @@ $(document).ready( function() {
   var experienceOutput = document.querySelector("#experience");
   var title = document.querySelector("#title");
 
-  // Set trade and fight buttons
+  // Set buttons
   var restartButton = document.querySelector("#newGameButton");
   restartButton.style.cursor = "pointer";
   restartButton.addEventListener("click", newGame, false);
+
+  var buyTab = document.getElementById("tab1");
+  buyTab.style.cursor = "pointer";
+  buyTab.addEventListener("click", buyMenu, false);
+
+  var sellTab = document.getElementById("tab3");
+  sellTab.style.cursor = "pointer";
+  sellTab.addEventListener("click", sellMenu, false);
+
+  var itemsTab = document.getElementById("tab2");
+  itemsTab.style.cursor = "pointer";
+  itemsTab.addEventListener("click", itemMenu, false);
 
   // The map stores all the non-moving (static) game objects
   var map = [
@@ -140,14 +161,10 @@ $(document).ready( function() {
   var tradeItem4 = [0, "sugar", 15];
   var tradeItem5 = [0, "salt", 30];
   var tradeItem6 = [0, "wool", 40];
-  var tradeItem7 = [0, "cotton cloth", 55];
+  var tradeItem7 = [0, "cotton", 55];
   var tradeItem8 = [0, "iron ore", 80];
   var tradeItem9 = [0, "tin ore", 50];
   var tradeItem10 = [0, "wine", 45];
-
-
-  /*   CHANGE PLAYER INVENTORY TO SEPARATE ARRAY  */
-
 
   // Array with all the trade items in it.
   var TRADEITEMS = [tradeItem1, tradeItem2, tradeItem3, tradeItem4, tradeItem5,
@@ -161,9 +178,9 @@ $(document).ready( function() {
   initializeIslandResources();
 
   // display initial starting values
-  foodOutput.innerHTML = "Food: " + food;
-  goldOutput.innerHTML = "Gold: " + gold;
-  experienceOutput.innerHTML = "Experience: " + experience;
+  foodOutput.innerHTML = "Food :  " + food;
+  goldOutput.innerHTML = "Gold :  " + gold;
+  experienceOutput.innerHTML = "Cargo Room:  " + experience + " / 20";
 
   // The keyboard listener to trigger keydownHandler function if a key is pressed
   window.addEventListener("keydown", keydownHandler, false);
@@ -314,7 +331,7 @@ $(document).ready( function() {
         var randChoice = Math.floor((Math.random() * 2) + 1);
         switch (randChoice) {
           case 1:
-            buy();
+            buyMenu();
             break;
           case 2:
             fight();
@@ -333,11 +350,11 @@ $(document).ready( function() {
       }
   }
 
-  function buy() {
+  function buyMenu() {
     var quantityToBuy = new Array;
     // Create an array to hold the items that will be bought and sold
     // on this island.
-    var islandTempResources = allIslandsResources[currentIslandNumber()].slice(0);
+    var islandTempResources = allIslandsResources[currentIslandNumber()];
     //console.log(islandTempResources);
 
     // Display the trading text
@@ -393,7 +410,7 @@ $(document).ready( function() {
       var quant = Math.floor(document.getElementById("buyField" + h).value);
       if (quant < 0) {
         alert("No negative numbers!");
-        buy();
+        buyMenu();
       }
     }
 
@@ -444,6 +461,14 @@ $(document).ready( function() {
     }
   }
 
+  function sellMenu() {
+
+  }
+
+  function itemMenu() {
+    
+  }
+
   function fight() {
     console.log("fight");
     title.innerHTML = "Pirate Attack!";
@@ -469,7 +494,6 @@ $(document).ready( function() {
   function render() {
     // Clear the stage of img tag cells
     // from the previous background
-
     if (stage.hasChildNodes()) {
       for (var i = 0; i < ROWS * COLUMNS; i++) {
         stage.removeChild(stage.firstChild);
