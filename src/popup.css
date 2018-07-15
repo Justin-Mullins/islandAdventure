@@ -38,6 +38,7 @@
   margin-left: 5px;
   border-radius: 10px;
   border: solid 3px #945c00;
+  z-index: 20;
 }
 
 #container {
@@ -50,7 +51,8 @@
 
 #tab1 {
   position: relative;
-  margin-left: 10px;
+  overflow: hidden;
+  margin-left: 11px;
   margin-top: 9px;
   width: 100px;
   height: 40px;
@@ -61,25 +63,45 @@
 
 #tab2 {
   position: relative;
+  overflow: hidden;
   width: 40px;
-  height: 100px;
+  height: 150px;
   margin-left: 638px;
   margin-top: 161px;
+  left: 0px;
   background-color: #70a193;
   border: solid 3px #945c00;
+  border-left: 0px;
   border-radius: 0px 10px 10px 0px;
 }
 
 #tab3 {
   position: relative;
+  overflow: hidden;
   width: 100px;
   height: 40px;
-  margin-left: 522px;
-  margin-top: 194px;
+  margin-left: 521px;
+  top: 0px;
   background-color: black;
   background-color: #70a193;
   border: solid 3px #945c00;
+  border-top: 0px;
   border-radius: 0px 0px 10px 10px;
+}
+
+#tab4 {
+  position: relative;
+  overflow: hidden;
+  width: 200px;
+  height: 367px;
+  left: 438px; /* 641px */
+  background-color: #74bfaa;
+  top: -424px;
+  border: solid 3px #945c00;
+  border-left: 0px;
+  border-radius: 0px 10px 10px 0px;
+  overflow: hidden;
+  z-index: 0;
 }
 
 #tabText1 {
@@ -94,12 +116,19 @@
 
 #tabText2 {
   width: 25px;
-  height: 90px;
+  height: 135px;
   margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: 2px;
   background-color: #f2f2ce;
   border: solid 2px #945c00;
   border-radius: 10px 10px 10px 10px;
   font-size: 15px;
+
+  writing-mode:tb-rl;
+  text-align: center;
+
 }
 
 #tabText3 {
@@ -110,6 +139,19 @@
   border: solid 2px #945c00;
   border-radius: 10px 10px 10px 10px;
   padding-top: 2px;
+}
+
+#tabText4 {
+  padding: 10px;
+  margin-top: 13px;
+  width: 150px;
+  height: 315px;
+  margin-left: 13px auto;
+  margin-right: 13px auto;
+  margin-botton: 13px;
+  background-color: white;
+  border: solid 3px #945c00;
+  border-radius: 10px;
 }
 
 #tab1:hover {

@@ -1,6 +1,6 @@
 <!doctype html>
 <head>
-  <title> Island Adventure 1</title>
+  <title>Island Adventure 1</title>
   <meta charset="UTF-8">
   <script src="jquery-3.3.1.js"></script>
   <link rel="stylesheet" href="popup.css">
@@ -33,10 +33,13 @@
         </div>
       </div>
       <div id="tab2" class="tab">
-        <p id="tabText2">I<br>t<br>e<br>m<br>s</p>
+        <p id="tabText2">I n v e n t o r y</p>
       </div>
       <div id="tab3" class="tab">
         <p id="tabText3">S e l l</p>
+      </div>
+      <div id="tab4" class="tab">
+        <p id="tabText4">Inventory:</p>
       </div>
     </div>
   </div>
@@ -48,30 +51,28 @@
 
 $(document).ready( function() {
 
-   // When site loaded, load the Popupbox First
-   // loadPopupBox();
+  // I leave the jQuery $(document).ready is open for the
+  // whole javascript document so it can be easily .
 
-   $('#popupBoxClose').click( function() {
-     unloadPopupBox();
-   });
+  // When site loaded, load the Popupbox First
+  // loadPopupBox();
 
-   function unloadPopupBox() {    // TO Unload the Popupbox
-     $(".popup_box").fadeOut("fast");
-     $(".modalOverlay").remove();
-     window.addEventListener("keydown", keydownHandler, false);
-   }
+ $('#popupBoxClose').click( function() {
+   unloadPopupBox();
+ });
 
-   function loadPopupBox() {    // To Load the Popupbox
-     //$("#popupBoxContainer").toggleClass("display");
-     $(".popup_box").fadeIn("fast");
-     $("body").append('<div class="modalOverlay">');
-     window.removeEventListener("keydown", keydownHandler, false);
-    }
+ function unloadPopupBox() {    // TO Unload the Popupbox
+   $(".popup_box").fadeOut("fast");
+   $(".modalOverlay").remove();
+   window.addEventListener("keydown", keydownHandler, false);
+ }
 
-
-// <--- End of jQuery for popup window --->
-// But jQuery $(document).ready is open for the
-// whole javascript document.
+ function loadPopupBox() {    // To Load the Popupbox
+   //$("#popupBoxContainer").toggleClass("display");
+   $(".popup_box").fadeIn("fast");
+   $("body").append('<div class="modalOverlay">');
+   window.removeEventListener("keydown", keydownHandler, false);
+  }
 
   // Get a reference to the stage and output
   var stage = document.querySelector("#stage");
@@ -108,9 +109,6 @@ $(document).ready( function() {
     [0, 0, 0, 0, 0, 0]
   ];
 
-  // Get a count of the total number of islands on this map.
-  var numOfIslands = countIslands();
-
   // The gameObjects array stores all the moving (dynamic) game objects
   var gameObjects = [
     [0, 0, 0, 0, 0, 0],
@@ -140,6 +138,9 @@ $(document).ready( function() {
   var DOWN = 40;
   var RIGHT = 39;
   var LEFT = 37;
+
+  // This is the range of how much the randomness can make the prices vary.
+  var PRICERANGE = 30;
 
   // The Ship's row and column
   var shipRow;
@@ -173,6 +174,10 @@ $(document).ready( function() {
   // This array stores each island's trade resources on the Map
   // As the player travels to a new island, their resources populate here.
   var allIslandsResources = new Array;
+  // This boolean says whether the item menu is open already or not.
+  var toggleInventoryMenuOpen = false;
+  // Get a count of the total number of islands on this map.
+  var numOfIslands = countIslands();
 
   // Initialize the trade items for each island.
   initializeIslandResources();
@@ -242,7 +247,7 @@ $(document).ready( function() {
       //output.innerHTML = "";
       foodOutput.innerHTML = "Food: " + food;
       goldOutput.innerHTML = "Gold: " + gold;
-      experienceOutput.innerHTML = "Experience: " + experience;
+      experienceOutput.innerHTML = "Cargo Room:  " + experience + " / 20";
       if (food <= 0 /* || gold <= 0 */) { endGame(); } // Check for endGame conditions
       render();
     }
@@ -281,42 +286,49 @@ $(document).ready( function() {
     // Island count starts at 0 from the top left corner of the map.
     for (var row = 0; row < ROWS; row++) {
       for (var column = 0; column < COLUMNS; column++) {
-        // As each island is found onf the map, increment the index.
+        // As each island is found on the map, increment the index.
         if (map[row][column] === 1) {
-          islandIndex++;
           // When the island is found that the ship is on, return the number.
           if (gameObjects[row][column] === 4) {
             return islandIndex;
           }
+          islandIndex++;
         }
       }
     }
   }
 
   function initializeIslandResources() {
+    // Loop through each island
     for (var i = 0; i < countIslands(); i++) {
-      // I need to make a temporary copy of TRADEITEMS array that will
-      // not change the original array, because I will be removing items
-      // from the copy. To make a copy that won't change the original-
-      // I have to use the .slice(0) to return a copy of the whole array.
-      var tradeItemsCopy = TRADEITEMS.slice(0);
-      // Create an empty array to hold the items that will be bought and sold
-      // on each island.
+      /*
+        I need to make a temporary copy of TRADEITEMS array that will not change
+        the original array, I will be removing items from the copy and don't want
+        to affect the original. To do this I will use jQuery $.exend to make a
+        deep copy.
+      */
+      var tradeItemsCopy = $.extend(true, [], TRADEITEMS); // Deep copy
+
+      // Create empty array to hold the items to buy and sell for each island.
       var islandTempResources = [];
-      // Create an empty variable that will hold the item index.
-      var randItemIndex;
+
+      // Loop through each resource for this island to buy and sell.
       for (var j = 0; j < 8; j++) {
-        // Create a random item index to pull an item from the array.
-        randItemIndex = Math.floor(Math.random() * tradeItemsCopy.length);
-        // Remove the random item from the tradeItemsCopy array,
-        // and then add it to the islandTempResources array for this island.
+        // Create a random number to add some randomness to the item prices
+        var priceRangeIndex = Math.floor(Math.random() * PRICERANGE);
+        // Create a random item index to pull a random item from the array.
+        var randItemIndex = Math.floor(Math.random() * tradeItemsCopy.length);
+        // Remove the random item from the tradeItemsCopy array.
         var temp = tradeItemsCopy.splice(randItemIndex, 1);
+        // Add the random price to the default price of the item.
+        temp[0][2] += priceRangeIndex;
+
+        // Add random item to the list of items for this island.
         islandTempResources.push(temp[0]);
       }
       // Add this island's trading resources to the all island resource array.
       allIslandsResources.push(islandTempResources);
     }
-    // console.log(allIslandsResources);
   }
 
   // This finds what kind of tile the ship is on top of
@@ -355,7 +367,6 @@ $(document).ready( function() {
     // Create an array to hold the items that will be bought and sold
     // on this island.
     var islandTempResources = allIslandsResources[currentIslandNumber()];
-    //console.log(islandTempResources);
 
     // Display the trading text
     title.innerHTML = "You find a trading outpost.";
@@ -448,7 +459,6 @@ $(document).ready( function() {
           }
         }
       }
-      console.log("all resources after: " + TRADEITEMS);
 
       // Reset the buy quantities to 0 of the island's resources.
       for (var m = 0; m < currentIslandResources.length / 2; m++) {
@@ -462,12 +472,151 @@ $(document).ready( function() {
   }
 
   function sellMenu() {
+    var quantityToSell = new Array;
+    // Create an array to hold the items that will be bought and sold
+    // on this island.
+    var islandTempResources = allIslandsResources[currentIslandNumber()];
 
+    //console.log(islandTempResources);
+
+    // Display the trading text
+    title.innerHTML = "You find a trading outpost.";
+    output.innerHTML = "<p id='tradeMessage'>You can sell:</p><div style='margin-top: 10px'>";
+
+    // This for loop will go through each of the item resources for selling
+    // It starts at .length / 2 because the first half of the list is for buying.
+    for (var index = islandTempResources.length / 2; index < islandTempResources.length; index++) {
+      var resourcePrice = islandTempResources[index][2];
+      var resourceName = islandTempResources[index][1];
+      // Current id for the sell quantity field.
+      var sellFieldId = "sellField" + index;
+      // var buyButtonId = "buyButton" + index;
+      // Get the max quantity of this item the player can sell.
+
+      // ******     CHANGE THE MAX TO BE HOW MANY THE PLAYER HAS IN INVENTORY    *******
+
+      var max = gold / resourcePrice;
+      // Add the output for displaying the resource name.
+      output.innerHTML += "<div class='row'>";
+      output.innerHTML += resourceName;
+      // Add the output displaying the resource's cost.
+      output.innerHTML += ": " + resourcePrice;
+      // Make a form so the player can select the ammount they want to sell.
+      // output.innerHTML += "<form>";
+      output.innerHTML += "<input type='number' class='buyInput' id='temp' name='quantity' value='0' min='0' max='5' SIZE='3'>";
+      output.innerHTML += "</div>";
+
+      // Change some of the attributes and id names to be unique, since this is
+      // looped in the for loop, each field needs a unique id.
+      document.getElementById("temp").setAttribute("max", max);
+      document.getElementById("temp").setAttribute("id", sellFieldId);
+      // document.getElementById("sell").setAttribute("id", sellButtonId);
+    }
+
+    // Add the button to the bottom, of the trade menu
+    output.innerHTML += "</div><br><input type='button' id='sellButton' class='button' value='Sale'>";
+    // output.innerHTML += "</div>";
+    // Add Event listener for clicks on the sell button.
+
+    var buyButton = document.querySelector("#sellButton");
+    buyButton.style.cursor = "pointer";
+    buyButton.addEventListener("click", sellResources, false);
   }
 
+  function sellResources() {
+    var currentIslandResources = allIslandsResources[currentIslandNumber()].slice(0);
+    var playerResourceNames = [];
+    var playerResourceQuantities = [];
+
+    // Create two arrays, one that holds the players resources names
+    // and the other that holds the player's resource quantities.
+    for (var itemIndex = 0; itemIndex < TRADEITEMS.length; itemIndex++) {
+      playerResourceNames.push(TRADEITEMS[itemIndex][1]);
+      playerResourceQuantities.push(TRADEITEMS[itemIndex][0]);
+    }
+
+    // 1. First thing is to test the user inputs and make sure they are whole
+    // numbers and are not negative
+    for (var h = currentIslandResources.length / 2; h < currentIslandResources.length; h++) {
+      // round down to make sure no decimals are input.
+      document.getElementById("sellField" + h).value = Math.floor(document.getElementById("sellField" + h).value);
+      var quant = Math.floor(document.getElementById("sellField" + h).value);
+      if (quant < 0) {
+        alert("No negative numbers!");
+        sellMenu();
+      }
+    }
+
+    // 2. Second thing is to determine if the player has enough resources to sell
+    // for the selected resource quantity.
+    var totalCost = 0;
+    var notEnoughResources = false;
+
+    // Loop through items the user wants to sell and get the quantity and totalCost.
+    for (var i = currentIslandResources.length / 2; i < currentIslandResources.length; i++) {
+      var resourcePrice = currentIslandResources[i][2];
+      var resourceName = currentIslandResources[i][1];
+      var index = playerResourceNames.indexOf(resourceName);
+
+      // Get the quantity that the player input from the input fields.
+      var quantity = document.getElementById("sellField" + i).value;
+      totalCost += resourcePrice * quantity;
+
+      // If the user doesn't have enough resources to sell, show message.
+      if (quantity > playerResourceQuantities[index]) {
+        notEnoughResources = true;
+      }
+    }
+
+    if (notEnoughResources === true) {
+      title.innerHTML = "You do not have enough resources.";
+      title.style.color = "red";
+    } else {
+      // Loop through each resource for sale on the island,
+      // and subtract each quantity selected to the player's resouces.
+      for (var j = currentIslandResources.length / 2; j < currentIslandResources.length; j++) {
+        var name = currentIslandResources[j][1];
+        // Loop through the TRADEITEMS array
+        for (var k = 0; k < TRADEITEMS.length; k++) {
+          if (name === TRADEITEMS[k][1]) {
+            // subtract the purchased item quantity from the player's resources.
+            TRADEITEMS[k][0] = Number(TRADEITEMS[k][0]) - Number(document.getElementById("sellField" + j).value);
+          }
+        }
+      }
+      console.log("all resources after: " + TRADEITEMS);
+
+      // Reset the sell quantities to 0 for the island's resources.
+      for (var m = currentIslandResources.length / 2; m < currentIslandResources.length; m++) {
+        document.getElementById("sellField" + m).value = 0;
+      }
+
+      // subtract the totalCost from the player's gold.
+      gold -= totalCost;
+      goldOutput.innerHTML = "Gold: " + gold;
+    }
+  }
+
+  // This jQuery function that uses .animate function to open the inventory menu.
   function itemMenu() {
-    
+    // If menu is closed, animate it open
+    if (toggleInventoryMenuOpen === false) {
+      $( "#tab4" )
+        .animate({ left: "641px" }, 600 );
+      $( "#tab2" )
+        .animate({ left: "203px" }, 600);
+      toggleInventoryMenuOpen = true;
+    } else { // Else, animate it closed
+      $( "#tab4" )
+        .animate({ left: "438px" }, 600 );
+      $( "#tab2" )
+        .animate({ left: "0px" }, 600);
+      toggleInventoryMenuOpen = false;
+    }
+
+    // Display items in player's inventory.
   }
+
 
   function fight() {
     console.log("fight");
@@ -551,6 +700,6 @@ $(document).ready( function() {
       }
     }
   }
-// <--- This is where the jQuery ends here --->
-});
+
+}); // <--- This is where the jQuery ends here --->
 </script>
