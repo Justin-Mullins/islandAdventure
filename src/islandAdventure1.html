@@ -39,7 +39,7 @@
         <p id="tabText3">S e l l</p>
       </div>
       <div id="tab4" class="tab">
-        <p id="tabText4">Inventory:</p>
+        <p id="tabText4"></p>
       </div>
     </div>
   </div>
@@ -72,7 +72,7 @@ $(document).ready( function() {
    $(".popup_box").fadeIn("fast");
    $("body").append('<div class="modalOverlay">');
    window.removeEventListener("keydown", keydownHandler, false);
-  }
+ }
 
   // Get a reference to the stage and output
   var stage = document.querySelector("#stage");
@@ -81,6 +81,7 @@ $(document).ready( function() {
   var goldOutput = document.querySelector("#gold");
   var experienceOutput = document.querySelector("#experience");
   var title = document.querySelector("#title");
+  var inventory = document.querySelector("#tabText4");
 
   // Set buttons
   var restartButton = document.querySelector("#newGameButton");
@@ -97,7 +98,7 @@ $(document).ready( function() {
 
   var itemsTab = document.getElementById("tab2");
   itemsTab.style.cursor = "pointer";
-  itemsTab.addEventListener("click", itemMenu, false);
+  itemsTab.addEventListener("click", openItemMenu, false);
 
   // The map stores all the non-moving (static) game objects
   var map = [
@@ -148,7 +149,7 @@ $(document).ready( function() {
 
   // The player's resouces Variables
   var gold = 100;
-  var food = 12;
+  var food = 30;
   var experience = 0;
   var gameMessage = "Use the arrow keys to find your way home.";
 
@@ -210,7 +211,7 @@ $(document).ready( function() {
         if (shipRow > 0) {
           // move the ship up one space.
           shipRow--;
-          food--; // Use up a food at the end of each turn
+          //food--; // Use up a food at the end of each turn
         }
         break;
       case DOWN:
@@ -218,7 +219,7 @@ $(document).ready( function() {
         if (shipRow < ROWS - 1) {
           // move the ship down one space.
           shipRow++;
-          food--; // Use up a food at the end of each turn
+          //food--; // Use up a food at the end of each turn
         }
         break;
       case LEFT:
@@ -226,7 +227,7 @@ $(document).ready( function() {
         if (shipColumn > 0) {
           // move the ship left one space.
           shipColumn--;
-          food--; // Use up a food at the end of each turn
+          //food--; // Use up a food at the end of each turn
         }
         break;
       case RIGHT:
@@ -234,7 +235,7 @@ $(document).ready( function() {
         if (shipColumn < COLUMNS - 1) {
           // move the ship right one space.
           shipColumn++;
-          food--; // Use up a food at the end of each turn
+          //food--; // Use up a food at the end of each turn
         }
         break;
     }
@@ -340,7 +341,7 @@ $(document).ready( function() {
         title.innerHTML = "You sail the open sea.";
         break;
       case ISLAND:
-        var randChoice = Math.floor((Math.random() * 2) + 1);
+        /*var randChoice = Math.floor((Math.random() * 2) + 1);
         switch (randChoice) {
           case 1:
             buyMenu();
@@ -351,7 +352,9 @@ $(document).ready( function() {
           case 3:
             randEncounter();
             break;
-        }
+
+        }*/
+        buyMenu();
         break;
       case PIRATE:
         fight();
@@ -455,7 +458,7 @@ $(document).ready( function() {
         for (var k = 0; k < TRADEITEMS.length; k++) {
           if (name === TRADEITEMS[k][1]) {
             // add the purchased item quantity to player's resources.
-            TRADEITEMS[k][0] = Number(TRADEITEMS[k][0]) + Number(document.getElementById("buyField" + j).value);
+            TRADEITEMS[k][0] += Number(document.getElementById("buyField" + j).value);
           }
         }
       }
@@ -468,6 +471,9 @@ $(document).ready( function() {
       // remove the totalCost from the player's gold.
       gold -= totalCost;
       goldOutput.innerHTML = "Gold: " + gold;
+
+      // update the item menu to reflect new items
+      updateItemMenu();
     }
   }
 
@@ -580,7 +586,7 @@ $(document).ready( function() {
         for (var k = 0; k < TRADEITEMS.length; k++) {
           if (name === TRADEITEMS[k][1]) {
             // subtract the purchased item quantity from the player's resources.
-            TRADEITEMS[k][0] = Number(TRADEITEMS[k][0]) - Number(document.getElementById("sellField" + j).value);
+            TRADEITEMS[k][0] -= Number(document.getElementById("sellField" + j).value);
           }
         }
       }
@@ -591,14 +597,17 @@ $(document).ready( function() {
         document.getElementById("sellField" + m).value = 0;
       }
 
-      // subtract the totalCost from the player's gold.
-      gold -= totalCost;
+      // add the totalCost from the player's gold.
+      gold += totalCost;
       goldOutput.innerHTML = "Gold: " + gold;
+
+      // update the item menu to reflect new items
+      updateItemMenu();
     }
   }
 
   // This jQuery function that uses .animate function to open the inventory menu.
-  function itemMenu() {
+  function openItemMenu() {
     // If menu is closed, animate it open
     if (toggleInventoryMenuOpen === false) {
       $( "#tab4" )
@@ -614,9 +623,24 @@ $(document).ready( function() {
       toggleInventoryMenuOpen = false;
     }
 
-    // Display items in player's inventory.
+    updateItemMenu();
   }
 
+  function updateItemMenu () {
+    /* Display items in player's inventory. */
+    inventory.innerHTML = "Inventory: <br><br>";
+    var playerResourceNames = [];
+    var playerResourceQuantities = [];
+    // Create two arrays, one that holds the players resources names
+    // and the other that holds the player's resource quantities.
+    for (var itemIndex = 0; itemIndex < TRADEITEMS.length; itemIndex++) {
+      var itemName = TRADEITEMS[itemIndex][1];
+      var itemQuantity = TRADEITEMS[itemIndex][0];
+      if (itemQuantity > 0) {
+        inventory.innerHTML += itemName + ": " + itemQuantity + "<br>";
+      }
+    }
+  }
 
   function fight() {
     console.log("fight");

@@ -24,7 +24,7 @@
   height: 384px;
   float: left;
 /*  margin-left: 26%; */
-  background-image: url("../images/background.png");
+  /*background-image: url("../images/background.png");*/
   border-radius: 10px;
   border: solid 3px #945c00;
 }
