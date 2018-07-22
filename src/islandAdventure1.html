@@ -184,7 +184,7 @@ $(document).ready( function() {
   // This boolean says whether the item menu is open already or not.
   var toggleInventoryMenuOpen = false;
   // This says whether attack mode is enabled or not.
-  var toggleAttackMode = false;
+  var attackMode = false;
   // Get a count of the total number of islands on this map.
   var numOfIslands = countIslands();
 
@@ -626,15 +626,15 @@ $(document).ready( function() {
     // If menu is closed, animate it open
     if (toggleInventoryMenuOpen === false) {
       $( "#tab4" )
-        .animate({ left: "638px" }, 600 );
+        .animate({ left: "640px" }, 500 );
       $( "#tab2" )
-        .animate({ left: "202px" }, 600);
+        .animate({ left: "202px" }, 500);
       toggleInventoryMenuOpen = true;
     } else { // Else, animate it closed
       $( "#tab4" )
-        .animate({ left: "436px" }, 600 );
+        .animate({ left: "436px" }, 500 );
       $( "#tab2" )
-        .animate({ left: "0px" }, 600);
+        .animate({ left: "0px" }, 500);
       toggleInventoryMenuOpen = false;
     }
 
@@ -659,7 +659,7 @@ $(document).ready( function() {
 
   function fight() {
     title.innerHTML = "Attack!";
-    output.innerHTML = "Choose where to attack";
+    output.innerHTML = "<p>Choose where to attack</p>";
 
     // After the fight button is clicked, show spaces that you can attack.
     var attackableSpaces = [];
@@ -688,14 +688,18 @@ $(document).ready( function() {
       var currentIndex = (currentRow * 6) + (currentCol % 6);
       var cellId = "cell" + currentIndex;
       var currentCell = document.getElementById(cellId);
-      console.log(currentIndex);
 
-      if (toggleAttackMode === false) {
+      if (attackMode === false) {
         // Add the grid image for each tile to show where player can attack
         currentCell.src = "../images/grid.png";
         // Add a click event for each cell that sends it's id as an argument.
         currentCell.style.cursor = "pointer";
-        currentCell.addEventListener("click",function() { attackEnemy(this.id) }, false);
+        $("#" + cellId).click(
+          function() {
+            // Call the render function to
+            render();
+            attackEnemy(this.id);
+          });
         // Use the hover method to choose what happens on mouse over and mouse out
         $("#" + cellId).hover(
           function() { // on mouse over show a red grid
@@ -704,22 +708,35 @@ $(document).ready( function() {
           this.src = "../images/grid.png";
         });
       } else {
-        currentCell.src = "../images/water.png";
-        currentCell.style.cursor = "auto";
+
       }
     }
-    // If attack mode is on, disable it, and clear messages.
-    if (toggleAttackMode === true) {
+    // If attack mode is on, disable it, clear messages, reset map.
+    if (attackMode === true) {
       title.innerHTML = "";
       output.innerHTML = "";
-      toggleAttackMode = false;
-    } else {
-      toggleAttackMode = true;
+      render();
+      attackMode = false;
+    } else { // Else, enable attack mode
+      attackMode = true;
     }
   }
 
-  function attackEnemy(id) {
-    console.log(id);
+  // This function is triggered after the player selects a tile to attack.
+  // It takes the selected cell id as an argument
+  function attackEnemy(cellId) {
+    // from the cellId, get the index from interval
+    var locationIndex = cellId.slice(4);
+    var selectedRow = Math.floor(locationIndex / 6);
+    var selectedCol = locationIndex % 6;
+    console.log("locationIndex: " + locationIndex);
+    var currentTile = map[selectedRow][selectedCol];
+    console.log("Current tile: " + currentTile);
+    if (currentTile === 2) {
+      console.log(2);
+    } else { // else, restart fight menu
+      output.innerHTML = "<p>You Miss</p>";
+    }
   }
 
   // This function find the distance between two tiles
@@ -740,47 +757,14 @@ $(document).ready( function() {
     console.log("randEncounter");
   }
 
-  function moveShipToCell(cellId) {
-    // get the destination index ready, from the id that was passed in
-    var destinationIndex = cellId.slice(4);
-    var destinationRow = Math.floor(destinationIndex / 6);
-    var destinationColumn = destinationIndex % 6;
 
-    // get the current location by calculating it using shipRow and shipColumn
-    var currentIndex = (shipRow * 6) + shipColumn;
-    var currentRow = shipRow;
-    var currentColumn = shipColumn;
-
-    var verticalDistance = destinationRow - currentRow;
-    var horizontalDistance = destinationColumn - currentColumn;
-
-    console.log("vertDist: " + verticalDistance);
-    console.log("horiDist: " + horizontalDistance);
-
-
-    for (var vert = 0; vert < Math.abs(verticalDistance); vert++) {
-      for (var hor = 0; hor < Math.abs(horizontalDistance); hor++) {
-        // Process a horizontal move
-        if (horizontalDistance > 0) {
-          shipColumn++;
-        } else {
-          shipColumn--;
-        }
-        setTimeout( function() {
-          updateEveryMove();
-        }, 300);
-      }
-      // Process a vertical move
-      if (verticalDistance > 0) {
-        shipRow++;
-      } else {
-        shipRow--;
-      }
-      setTimeout( function() {
-        updateEveryMove();
-      }, 300);
-    }
-    shipLocationAction(); // Find ship location and perform action
+  // This function will update characterss the health bar
+  // It takes two arguments, the first is an array with
+  // the x and y coordinates of where the character is that
+  // is being affected. The second argument it takes is the
+  // percentage that the health bar will be fill up to.
+  function updateHealthBar(coordinates, percentage) {
+    // Using the
   }
 
   function updateEveryMove() {
@@ -824,9 +808,7 @@ $(document).ready( function() {
         var cell = document.createElement("img");
         var cellId = "cell" + cellIndex;
 
-        // Add a click event for each cell that sends it's id as an argument.
-        // cell.style.cursor = "pointer";
-        // cell.addEventListener("click",function() { moveShipToCell(this.id) }, false);
+
 
         // Set its CSS class to "cell"
         cell.setAttribute("class", "cell");
