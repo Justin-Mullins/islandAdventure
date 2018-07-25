@@ -28,7 +28,7 @@
       <div class="item" id="menu">
         <p id="title"></p>
         <p id="output"></p>
-        <div id="tab1">
+        <div id="tab1" class="tab">
           <p id="tabText1">B u y</p>
         </div>
       </div>
@@ -183,6 +183,7 @@ $(document).ready( function() {
   var allIslandsResources = new Array;
   // This boolean says whether the item menu is open already or not.
   var toggleInventoryMenuOpen = false;
+  var isThisAnIsland = false;
   // This says whether attack mode is enabled or not.
   var attackMode = false;
   // Get a count of the total number of islands on this map.
@@ -220,7 +221,7 @@ $(document).ready( function() {
         if (shipRow > 0 && map[shipRow - 1][shipColumn] !== 2) {
           // move the ship up one space.
           shipRow--;
-          //food--; // Use up a food at the end of each turn
+          food--; // Use up a food at the end of each turn
         }
         break;
       case DOWN:
@@ -229,7 +230,7 @@ $(document).ready( function() {
         if (shipRow < ROWS - 1 && map[shipRow + 1][shipColumn] !== 2) {
           // move the ship down one space.
           shipRow++;
-          //food--; // Use up a food at the end of each turn
+          food--; // Use up a food at the end of each turn
         }
         break;
       case LEFT:
@@ -238,7 +239,7 @@ $(document).ready( function() {
         if (shipColumn > 0 && map[shipRow][shipColumn - 1] !== 2) {
           // move the ship left one space.
           shipColumn--;
-          //food--; // Use up a food at the end of each turn
+          food--; // Use up a food at the end of each turn
         }
         break;
       case RIGHT:
@@ -247,7 +248,7 @@ $(document).ready( function() {
         if (shipColumn < COLUMNS - 1  && map[shipRow][shipColumn + 1] !== 2) {
           // move the ship right one space.
           shipColumn++;
-          //food--; // Use up a food at the end of each turn
+          food--; // Use up a food at the end of each turn
         }
         break;
     }
@@ -345,31 +346,52 @@ $(document).ready( function() {
     }
   }
 
+  function findAllEnemies() {
+    // This function finds all the enemies and returns an array
+    // with arrays of coordinates [[x, y], [x, y]...]
+    var enemyCoordinates = [];
+
+    for(var row = 0; row < ROWS; row++) {
+      for(var col = 0; col < COLUMNS; col++) {
+        if(map[row][col] === 2) {
+          enemyCoordinates.push([row, col]);
+        }
+      }
+    }
+    return  enemyCoordinates;
+  }
+
+  // figure out enemy's next move.
   function performEnemyAction() {
-    console.log("test");
+    // Get all enemy locations
+    var enemyCoordinates = findAllEnemies();
+
+    // loop through each enemy
+    for(var enemy = 0; enemy < enemyCoordinates.length; enemy++) {
+      // for each enemy 
+    }
   }
 
   // This finds what kind of tile the ship is on top of
   // Currently and then performs action for that location.
   function shipLocationAction() {
+    // If the buy and sell tabs are open, then close them
+    if (isThisAnIsland === true) {
+      buyTab.style.visibility = "hidden";
+      sellTab.style.visibility = "hidden";
+    }
+
     var currentLocation = map[shipRow][shipColumn];
+
     switch (currentLocation) {
       case WATER:
         title.innerHTML = "You sail the open sea.";
         break;
       case ISLAND:
-        // var randChoice = Math.floor((Math.random() * 2) + 1);
-        /*switch (randChoice) {
-          case 1:
-            buyMenu();
-            break;
-          case 2:
-            // fight();
-            break;
-          case 3:
-            randEncounter();
-            break;
-        }*/
+        // display the buy and sell menu tabs
+        buyTab.style.visibility = "visible";
+        sellTab.style.visibility = "visible";
+        isThisAnIsland = true;
         buyMenu();
         break;
       case PIRATE:
@@ -732,8 +754,13 @@ $(document).ready( function() {
     console.log("locationIndex: " + locationIndex);
     var currentTile = map[selectedRow][selectedCol];
     console.log("Current tile: " + currentTile);
+
+    // if chosen tile contains an enemy, attack it
     if (currentTile === 2) {
-      console.log(2);
+      // remove enemy from Map and up
+      map[selectedRow][selectedCol] = 0;
+      render();
+      output.innerHTML = "You defeated the enemy!"
     } else { // else, restart fight menu
       output.innerHTML = "<p>You Miss</p>";
     }

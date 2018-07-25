@@ -23,8 +23,8 @@
   width: 384px;
   height: 384px;
   float: left;
-/*  margin-left: 26%; */
-  /*background-image: url("../images/background.png");*/
+  /*  margin-left: 26%; */
+  background-image: url("../images/bg.png");
   border-radius: 10px;
   border: solid 3px #945c00;
 }
@@ -111,7 +111,7 @@
   overflow: hidden;
   width: 40px;
   height: 114px;
-  left: 641px;
+  left: 642px;
   top: -593px;
   background-color: #70a193;
   border: solid 3px #945c00;
