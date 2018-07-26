@@ -44,6 +44,9 @@
       <div id="tab5" class="tab">
         <p id="tabText5">A t t a c k</p>
       </div>
+      <div id="tab6" class="tab">
+        <div id="tabText6"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -85,6 +88,7 @@ $(document).ready( function() {
   var experienceOutput = document.querySelector("#experience");
   var title = document.querySelector("#title");
   var inventory = document.querySelector("#tabText4");
+  var healthBar = document.querySelector("#tabText6");
 
   var restartButton = document.querySelector("#newGameButton");
   restartButton.style.cursor = "pointer";
@@ -108,21 +112,21 @@ $(document).ready( function() {
 
   // The map stores all the non-moving (static) game objects
   var map = [
-    [0, 0, 2, 0, 0, 3],
+    [0, 0, 0, 0, 0, 3],
     [0, 0, 0, 1, 0, 0],
     [1, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 1, 0],
-    [0, 1, 0, 2, 0, 0],
+    [0, 1, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0]
   ];
 
   // The gameObjects array stores all the moving (dynamic) game objects
   var gameObjects = [
+    [0, 0, 2, 0, 0, 0],
     [0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 2],
     [4, 0, 0, 0, 0, 0]
   ];
 
@@ -157,6 +161,7 @@ $(document).ready( function() {
   var gold = 100;
   var food = 30;
   var experience = 0;
+  var health = 5;
   var gameMessage = "Use the arrow keys to find your way home.";
 
   // Arrays for each resource, to store 3 values each.
@@ -191,6 +196,8 @@ $(document).ready( function() {
 
   // Initialize the trade items for each island.
   initializeIslandResources();
+  
+  displayPlayerHealth();
 
   // display initial starting values
   foodOutput.innerHTML = "Food :  " + food;
@@ -218,7 +225,7 @@ $(document).ready( function() {
       case UP:
         // If the ship is not at the top edge of the map
         // AND if the ship is not next to a pirate
-        if (shipRow > 0 && map[shipRow - 1][shipColumn] !== 2) {
+        if (shipRow > 0 && gameObjects[shipRow - 1][shipColumn] !== 2) {
           // move the ship up one space.
           shipRow--;
           food--; // Use up a food at the end of each turn
@@ -227,7 +234,7 @@ $(document).ready( function() {
       case DOWN:
         // If the ship is not at the bottom edge of the map
         // AND if the ship is not next to a pirate
-        if (shipRow < ROWS - 1 && map[shipRow + 1][shipColumn] !== 2) {
+        if (shipRow < ROWS - 1 && gameObjects[shipRow + 1][shipColumn] !== 2) {
           // move the ship down one space.
           shipRow++;
           food--; // Use up a food at the end of each turn
@@ -236,7 +243,7 @@ $(document).ready( function() {
       case LEFT:
         // If the ship is not at the left edge of the map
         // AND if the ship is not next to a pirate
-        if (shipColumn > 0 && map[shipRow][shipColumn - 1] !== 2) {
+        if (shipColumn > 0 && gameObjects[shipRow][shipColumn - 1] !== 2) {
           // move the ship left one space.
           shipColumn--;
           food--; // Use up a food at the end of each turn
@@ -245,7 +252,7 @@ $(document).ready( function() {
       case RIGHT:
         // If the ship is not at the right edge of the map
         // AND if the ship is not next to a pirate
-        if (shipColumn < COLUMNS - 1  && map[shipRow][shipColumn + 1] !== 2) {
+        if (shipColumn < COLUMNS - 1  && gameObjects[shipRow][shipColumn + 1] !== 2) {
           // move the ship right one space.
           shipColumn++;
           food--; // Use up a food at the end of each turn
@@ -255,27 +262,43 @@ $(document).ready( function() {
 
     // Only excecute the next actions if the key pressed was up, down, left or right
     if (key === UP || key === DOWN || key === LEFT || key === RIGHT) {
-      resetGameObjects(); // Update the gameObjects array
-      shipLocationAction(); // Find ship location and perform action
-      performEnemyAction(); // Performs enemy actions
-      // Update resource count being displayed
-      //output.innerHTML = "";
-      foodOutput.innerHTML = "Food: " + food;
-      goldOutput.innerHTML = "Gold: " + gold;
-      experienceOutput.innerHTML = "Cargo Room:  " + experience + " / 20";
-      if (food <= 0 /* || gold <= 0 */) { endGame(); } // Check for endGame conditions
-      render();
+      endOfTurn();
+    }
+  }
+
+  function endOfTurn() {
+    resetGameObjects(); // Update the gameObjects array
+    shipLocationAction(); // Find ship location and perform action
+    performEnemyAction(); // Performs enemy actions
+    displayPlayerHealth();
+    // Update resource count being displayed
+    //output.innerHTML = "";
+    foodOutput.innerHTML = "Food: " + food;
+    goldOutput.innerHTML = "Gold: " + gold;
+    experienceOutput.innerHTML = "Cargo Room:  " + experience + " / 20";
+    if (food <= 0 /* || gold <= 0 */) { endGame(); } // Check for endGame conditions
+    render();
+  }
+
+  function displayPlayerHealth() {
+    // healthBar.innerHTML = "";
+    healthBar.innerHTML = "";
+    for (var i = 0; i < health; i++) {
+      healthBar.innerHTML += "<img src='../images/heart.png' height='16' width='16' class='hearts'>";
     }
   }
 
   function resetGameObjects() {
+    var enemyCoordinates = findAllEnemies();
+
     // Update the gameObjects array
     for (var row = 0; row < ROWS; row++) {
       for (var column = 0; column < COLUMNS; column++) {
         if (shipRow === row && shipColumn === column) {
           gameObjects[row][column] = 4;
-        }
-        else {
+        } else if (gameObjects[row][column] === 2) {
+          gameObjects[row][column] = 2;
+        } else {
           gameObjects[row][column] = 0;
         }
       }
@@ -353,7 +376,7 @@ $(document).ready( function() {
 
     for(var row = 0; row < ROWS; row++) {
       for(var col = 0; col < COLUMNS; col++) {
-        if(map[row][col] === 2) {
+        if(gameObjects[row][col] === 2) {
           enemyCoordinates.push([row, col]);
         }
       }
@@ -363,13 +386,47 @@ $(document).ready( function() {
 
   // figure out enemy's next move.
   function performEnemyAction() {
+
     // Get all enemy locations
     var enemyCoordinates = findAllEnemies();
-
     // loop through each enemy
-    for(var enemy = 0; enemy < enemyCoordinates.length; enemy++) {
-      // for each enemy 
+
+    for (var enemy = 0; enemy < enemyCoordinates.length; enemy++) {
+      // for each enemy find best move towards player
+      var enemyRow = enemyCoordinates[enemy][0];
+      var enemyCol = enemyCoordinates[enemy][1];
+      var newRow = enemyRow;
+      var newCol = enemyCol;
+
+      // Get distance of the
+      var distance = findRange([shipRow, shipColumn], [enemyRow, enemyCol]);
+      console.log("distance: " + distance);
+      if (distance <= 3) { //  if enemy is in attack range, then attack
+        enemyAttack();
+      } else if (enemyRow - shipRow !== 0) { //  if enemy and player are not in same row
+        // Check if enemyRow > shipRow, if so decrement enemyRow by 1
+        if (enemyRow > shipRow) {
+          newRow--;
+        } else { // else, increment enemyRow by 1
+          newRow++;
+        }
+      } else if (enemyCol - shipColumn !== 0) { // if enemy and player are not in the same column
+        if (enemyCol > shipColumn) {
+          newCol--;
+        } else {
+          newCol++;
+        }
+      }
+      // Update the map to reflect enemy's move
+      // Turn enemy's current location to
+      gameObjects[enemyRow][enemyCol] = 0;
+      // Move enemy to new position on map
+      gameObjects[newRow][newCol] = 2;
     }
+  }
+
+  function enemyAttack() {
+    console.log("Enemy is in attack range.");
   }
 
   // This finds what kind of tile the ship is on top of
@@ -393,9 +450,6 @@ $(document).ready( function() {
         sellTab.style.visibility = "visible";
         isThisAnIsland = true;
         buyMenu();
-        break;
-      case PIRATE:
-        // fight();
         break;
       case HOME:
         endGame();
@@ -696,7 +750,7 @@ $(document).ready( function() {
         // And check if the space is less than or equal to 2 spaces away.
         // and it also checks the space is not the ship's current tile.
         var distance = findRange([shipRow, shipColumn], [row, col]);
-        if ((map[row][col] === 0 || map[row][col] === 2 ) && distance <= attackDistance && gameObjects[row][col] !== 4) {
+        if ((map[row][col] === 0 || gameObjects[row][col] === 2 ) && distance <= attackDistance && gameObjects[row][col] !== 4) {
           attackableSpaces.push([row, col]);
         }
       }
@@ -720,7 +774,7 @@ $(document).ready( function() {
           function() {
             // Call the render function to
             render();
-            attackEnemy(this.id);
+            playerAttack(this.id);
           });
         // Use the hover method to choose what happens on mouse over and mouse out
         $("#" + cellId).hover(
@@ -746,24 +800,24 @@ $(document).ready( function() {
 
   // This function is triggered after the player selects a tile to attack.
   // It takes the selected cell id as an argument
-  function attackEnemy(cellId) {
+  function playerAttack(cellId) {
     // from the cellId, get the index from interval
     var locationIndex = cellId.slice(4);
     var selectedRow = Math.floor(locationIndex / 6);
     var selectedCol = locationIndex % 6;
     console.log("locationIndex: " + locationIndex);
-    var currentTile = map[selectedRow][selectedCol];
+    var currentTile = gameObjects[selectedRow][selectedCol];
     console.log("Current tile: " + currentTile);
 
     // if chosen tile contains an enemy, attack it
     if (currentTile === 2) {
       // remove enemy from Map and up
-      map[selectedRow][selectedCol] = 0;
-      render();
+      gameObjects[selectedRow][selectedCol] = 0;
       output.innerHTML = "You defeated the enemy!"
     } else { // else, restart fight menu
       output.innerHTML = "<p>You Miss</p>";
     }
+    endOfTurn();
   }
 
   // This function find the distance between two tiles
@@ -853,28 +907,28 @@ $(document).ready( function() {
 
         // Find the correct image for this map cell
         switch (map[row][column]) {
-          case WATER: // body.style.backgroundImage = 'url(http://localhost/background.png)';
+          case WATER:
             cell.style.backgroundImage = 'url(../images/water.png)';
             break;
           case ISLAND:
             cell.style.backgroundImage = 'url(../images/island.png)';
-            break;
-          case PIRATE:
-            cell.style.backgroundImage = 'url(../images/pirate.png)';
             break;
           case HOME:
             cell.style.backgroundImage = 'url(../images/home.png)';
             break;
           }
 
-          // Add the ship from the gameObjects array
-          switch (gameObjects[row][column]) {
-            case SHIP:
-              cell.src = "../images/ship.png";
-              cell.setAttribute("id", "ship");
-              break;
-            default:
-          }
+        // Add the ship from the gameObjects array
+        switch (gameObjects[row][column]) {
+          case SHIP:
+            cell.src = "../images/ship.png";
+            cell.setAttribute("id", "ship");
+            break;
+          case PIRATE:
+            cell.style.backgroundImage = 'url(../images/pirate.png)';
+            break;
+          default:
+        }
 
         // Position the cell
         cell.style.top = row * SIZE + "px";

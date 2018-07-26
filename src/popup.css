@@ -53,7 +53,7 @@
   position: relative;
   overflow: hidden;
   margin-left: 11px;
-  margin-top: 12px;
+  margin-top: 9px;
   width: 100px;
   height: 40px;
   background-color: #70a193;
@@ -111,12 +111,23 @@
   overflow: hidden;
   width: 40px;
   height: 114px;
-  left: 642px;
+  left: 641px;
   top: -593px;
   background-color: #70a193;
   border: solid 3px #945c00;
   border-left: 0px;
   border-radius: 0px 10px 10px 0px;
+}
+
+#tab6 {
+  position: relative;
+  width: 386px;
+  height: 50px;
+  left: -1px;
+  top: -530px;
+  background-color: #74bfaa;
+  border: solid 3px #945c00;
+  border-radius: 10px;
 }
 
 #tabText1 {
@@ -184,6 +195,16 @@
   text-align: center;
 }
 
+#tabText6 {
+  padding: 3px;
+  margin: 7px;
+  width: 360px;
+  height: 24px;
+  background-color: white;
+  border: solid 3px #945c00;
+  border-radius: 10px;
+}
+
 #tab1:hover {
   background-color: #69e0e3;
 }
@@ -230,16 +251,22 @@
 }
 
 #output2 {
-  margin-top: 15px;
-  padding-top: 5px;
+  margin-top: 10px;
+  padding: 5px;
+  padding-top: 8px;
   width: 600px;
-  height: 22px;
+  height: 24px;
   margin-left: auto;
   margin-right: auto;
   background-color: white;
   border: solid 3px #945c00;
   border-radius: 10px;
-  margin-left: 13px;
+  margin-left: 10px;
+}
+
+.hearts {
+  padding-top: 3px;
+  padding-left: 5px;
 }
 
 .resource {
