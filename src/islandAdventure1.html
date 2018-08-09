@@ -20,7 +20,7 @@
       <div id="output2">
         <p class="resource" id="food"></p>
         <p class="resource" id="gold"></p>
-        <p class="resource" id="experience"></p>
+        <p class="resource" id="cargoRoom"></p>
       </div>
     </div>
     <div id="container">
@@ -85,7 +85,7 @@ $(document).ready( function() {
   var output = document.querySelector("#output");
   var foodOutput = document.querySelector("#food");
   var goldOutput = document.querySelector("#gold");
-  var experienceOutput = document.querySelector("#experience");
+  var cargoRoomOutput = document.querySelector("#cargoRoom");
   var title = document.querySelector("#title");
   var inventory = document.querySelector("#tabText4");
   var healthBar = document.querySelector("#tabText6");
@@ -175,7 +175,8 @@ $(document).ready( function() {
   // The player's resouces Variables
   var gold = 100;
   var food = 30;
-  var experience = 0;
+  var cargoRoom = 0;
+  var maxCargoRoom = 20;
   var health = 6;
   var gameMessage = "Use the arrow keys to find your way home.";
 
@@ -217,7 +218,7 @@ $(document).ready( function() {
   // display initial starting values
   foodOutput.innerHTML = "Food :  " + food;
   goldOutput.innerHTML = "Gold :  " + gold;
-  experienceOutput.innerHTML = "Cargo Room:  " + experience + " / 20";
+  cargoRoomOutput.innerHTML = "Cargo Room:  " + cargoRoom + " / " + maxCargoRoom;
 
   // The keyboard listener to trigger keydownHandler function if a key is pressed
   window.addEventListener("keydown", keydownHandler, false);
@@ -278,6 +279,7 @@ $(document).ready( function() {
         }
         break;
     }
+
   }
 
   function endOfTurnActions() {
@@ -285,15 +287,25 @@ $(document).ready( function() {
     shipLocationAction(); // Find ship location and perform action
     performEnemyAction(); // Performs enemy actions
     displayPlayerHealth(); // Update player health
-    // Update resource count being displayed
-    //output.innerHTML = "";
+    updateCargoRoom(); // Update cargo room
+    title.style.color = "#945c00";
     foodOutput.innerHTML = "Food: " + food;
     goldOutput.innerHTML = "Gold: " + gold;
-    experienceOutput.innerHTML = "Cargo Room:  " + experience + " / 20";
+    cargoRoomOutput.innerHTML = "Cargo Room:  " + cargoRoom + " / " + maxCargoRoom;
     if (food <= 0  || health <= 0) { // Check for endGame conditions
       endGame();
     }
     render();
+  }
+
+  function updateCargoRoom() {
+    var totalQuantity = 0;
+    // Loop through player's resources and add up the quantity.
+    for (var i = 0; i < TRADEITEMS.length; i++) {
+      // Add quantity for each item to total quantity.
+      totalQuantity += TRADEITEMS[i][0];
+    }
+    cargoRoom = totalQuantity;
   }
 
   function displayPlayerHealth() {
@@ -561,6 +573,7 @@ $(document).ready( function() {
     // 2. Second thing is to determine if the player has enough gold to buy
     // the selected resources.
     var totalCost = 0;
+    var totalQuantity = 0;
     var inputs = [];
     // Loop through the items for sale and add up the quantity
     // that the player wants to buy.
@@ -570,6 +583,7 @@ $(document).ready( function() {
 
       // Get the quantity that the player input from the input fields.
       var quantity = document.getElementById("buyField" + i).value;
+      totalQuantity += Number(quantity);
       totalCost += resourcePrice * quantity;
     }
     // If player does not have enough gold, display message
@@ -577,7 +591,11 @@ $(document).ready( function() {
       title.innerHTML = "You do not have enough gold.";
       title.style.color = "red";
     }
-    else {
+    else if (maxCargoRoom - cargoRoom < totalQuantity) { // If player doesn't have enough room in cargo
+      title.innerHTML = "Not enough room in the cargo hold."
+      title.style.color = "red";
+    }
+    else { // If player DOES have enough gold room in cargo hold
 
       // Loop through each resource for sale on the island,
       // and add each quantity selected to the player's resouces.
@@ -602,8 +620,13 @@ $(document).ready( function() {
       gold -= totalCost;
       goldOutput.innerHTML = "Gold: " + gold;
 
-      // update the item menu to reflect new items
+      // update the item inventory to reflect new items
       updateItemMenu();
+      // Update cargo hold to reflect new items
+      updateCargoRoom();
+      cargoRoomOutput.innerHTML = "Cargo Room:  " + cargoRoom + " / " + maxCargoRoom;
+      title.style.color = "#945c00";
+      title.innerHTML = "";
     }
   }
 
@@ -732,6 +755,11 @@ $(document).ready( function() {
 
       // update the item menu to reflect new items
       updateItemMenu();
+      // Update cargo room
+      updateCargoRoom();
+      cargoRoomOutput.innerHTML = "Cargo Room:  " + cargoRoom + " / " + maxCargoRoom;
+      title.style.color = "#945c00";
+      title.innerHTML = "";
     }
   }
 
@@ -788,7 +816,8 @@ $(document).ready( function() {
         // And check if the space is less than or equal to 2 spaces away.
         // and it also checks the space is not the ship's current tile.
         var distance = findRange([shipRow, shipColumn], [row, col]);
-        if ((map[row][col] === 0 || gameObjects[row][col] === 2 ) && distance <= attackDistance && gameObjects[row][col] !== 4) {
+        if ((map[row][col] === 0 || gameObjects[row][col] === 2 ) &&
+          distance <= attackDistance && gameObjects[row][col] !== 4) {
           attackableSpaces.push([row, col]);
         }
       }
@@ -803,6 +832,7 @@ $(document).ready( function() {
       var cellId = "cell" + currentIndex;
       var currentCell = document.getElementById(cellId);
 
+      // If attack mode has not alread been activated
       if (attackMode === false) {
         // Add the grid image for each tile to show where player can attack
         currentCell.src = "../images/48/grid.png";
@@ -810,8 +840,7 @@ $(document).ready( function() {
         currentCell.style.cursor = "pointer";
         $("#" + cellId).click(
           function() {
-            // Call the render function to
-            render();
+            // Call the player attack function
             playerAttack(this.id);
           });
         // Use the hover method to choose what happens on mouse over and mouse out
@@ -855,10 +884,11 @@ $(document).ready( function() {
     } else { // else, restart fight menu
       output.innerHTML = "<p>You Miss</p>";
     }
+    attackMode = false;
     endOfTurnActions();
   }
 
-  // This function find the distance between two tiles
+  // This function finds the distance between two tiles
   // It takes 2 arrays as arguments, they both have [row, col]
   function findRange(origin, destination) {
     originRow = origin[0];
